@@ -21,12 +21,7 @@ def get_database_connection():
             password=password,
             authSource='admin',
             authMechanism='PLAIN',
-            ssl=True,
-            ssl_cert_reqs=ssl.CERT_NONE,  # Disable certificate validation
-            serverSelectionTimeoutMS=5000,  # Reduce server selection timeout
-            connectTimeoutMS=10000,  # Reduce connection timeout
-            retryWrites=False,
-            loadBalanced=True
+       
         )
         
         # Test the connection
