@@ -2,7 +2,6 @@ import streamlit as st
 import pymongo
 import pandas as pd
 from urllib.parse import quote_plus
-import certifi
 
 # Configuration
 def get_database_connection():
@@ -16,12 +15,10 @@ def get_database_connection():
     uri = f"mongodb://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/admin?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true"
     
     try:
-        # Create a connection using pymongo with SSL configuration
+        # Create a connection using pymongo with disabled SSL verification
         client = pymongo.MongoClient(
             uri,
-            tlsCAFile=certifi.where(),  # Use certifi's SSL certificates
-            ssl=True,
-            ssl_cert_reqs='CERT_REQUIRED'
+            tlsAllowInvalidCertificates=True
         )
         # Test the connection
         client.admin.command('ping')
