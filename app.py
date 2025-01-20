@@ -1,27 +1,24 @@
 import streamlit as st
 import pymongo
 import pandas as pd
-from urllib.parse import quote_plus
-import ssl
 
 # Configuration
 def get_database_connection():
     # MongoDB connection details
     username = "admin"
     password = "Welcome#12345W#"
-    host = "G33EE83CE279BB9-TATAJSONDB.adb.ap-mumbai-1.oraclecloudapps.com"
-    port = "27017"
+    host = "129.154.246.136"  # Direct IP address
+    port = 27017
     
     try:
-        # Create a MongoClient with modified SSL settings
+        # Create a MongoClient with the direct IP connection
         client = pymongo.MongoClient(
             host=host,
-            port=int(port),
+            port=port,
             username=username,
             password=password,
-            authSource='admin',
-            authMechanism='PLAIN',
-       
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=10000
         )
         
         # Test the connection
