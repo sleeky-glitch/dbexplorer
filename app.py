@@ -21,10 +21,6 @@ def get_database_connection():
             connectTimeoutMS=10000
         )
         
-        # Test the connection
-        client.admin.command('ping')
-        return client
-        
     except pymongo.errors.ServerSelectionTimeoutError as e:
         st.error(f"Timeout error: {str(e)}")
         return None
