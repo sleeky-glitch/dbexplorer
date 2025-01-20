@@ -2,6 +2,7 @@ import streamlit as st
 import pymongo
 import pandas as pd
 from urllib.parse import quote_plus
+import ssl
 
 # Configuration
 def get_database_connection():
@@ -11,18 +12,33 @@ def get_database_connection():
     host = "G33EE83CE279BB9-TATAJSONDB.adb.ap-mumbai-1.oraclecloudapps.com"
     port = "27017"
     
-    # Create the connection URI with properly escaped credentials
-    uri = f"mongodb://{quote_plus(username)}:{quote_plus(password)}@{host}:{port}/admin?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true"
-    
     try:
-        # Create a connection using pymongo with disabled SSL verification
+        # Create a MongoClient with modified SSL settings
         client = pymongo.MongoClient(
-            uri,
-            tlsAllowInvalidCertificates=True
+            host=host,
+            port=int(port),
+            username=username,
+            password=password,
+            authSource='admin',
+            authMechanism='PLAIN',
+            ssl=True,
+            ssl_cert_reqs=ssl.CERT_NONE,  # Disable certificate validation
+            serverSelectionTimeoutMS=5000,  # Reduce server selection timeout
+            connectTimeoutMS=10000,  # Reduce connection timeout
+            retryWrites=False,
+            loadBalanced=True
         )
+        
         # Test the connection
         client.admin.command('ping')
         return client
+        
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        st.error(f"Timeout error: {str(e)}")
+        return None
+    except pymongo.errors.ConnectionFailure as e:
+        st.error(f"Connection error: {str(e)}")
+        return None
     except Exception as e:
         st.error(f"Error connecting to database: {str(e)}")
         return None
